@@ -27,6 +27,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.ServletOutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,12 +129,12 @@ public class SecurityConfig {
                 "*"
         ));*/
         configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(List.of("*"
+        configuration.setAllowedHeaders(Arrays.asList("*"
                 /*"Accept",
                 "Content-Type",
                 "Authorization"*/
         ));
-        configuration.setAllowedMethods(List.of(
+        configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "DELETE", "PUT"
         ));
 

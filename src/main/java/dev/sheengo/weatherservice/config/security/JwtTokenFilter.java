@@ -34,7 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        if (authorization == null || authorization.isBlank()) {
+        if (authorization == null || authorization.trim().isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }

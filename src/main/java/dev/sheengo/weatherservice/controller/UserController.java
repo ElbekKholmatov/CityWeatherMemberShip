@@ -1,11 +1,13 @@
 package dev.sheengo.weatherservice.controller;
 
 import dev.sheengo.weatherservice.domains.City;
+import dev.sheengo.weatherservice.dto.MemberShipCitiesDTO;
 import dev.sheengo.weatherservice.service.AuthService;
 import dev.sheengo.weatherservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +23,19 @@ public class UserController {
 
     @PostMapping("/getMemberShip")
     public ResponseEntity<Void> getMemberShip(
-            List<String> cities
+            MemberShipCitiesDTO cities
     ) {
         userService.getMemberShip(cities);
+        return ResponseEntity.status(201).build();
     }
+
+    @DeleteMapping("/cancelMemberShip")
+    public ResponseEntity<Void> deleteMemberShip(
+            MemberShipCitiesDTO cities
+    ) {
+        userService.cancelMemberShip(cities);
+        return ResponseEntity.status(204).build();
+    }
+
+
 }

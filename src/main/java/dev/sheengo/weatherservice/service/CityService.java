@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -102,5 +103,10 @@ public class CityService {
         );
         city.setDeleted(true);
         cityRepository.save(city);
+    }
+
+    public List<City> findAllByNames(List<String> cities) {
+        System.out.println(cityRepository.findAllByNameIn(cities));
+        return cityRepository.findAllByNameIn(cities);
     }
 }

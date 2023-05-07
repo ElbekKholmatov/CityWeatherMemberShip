@@ -1,6 +1,7 @@
 package dev.sheengo.weatherservice.domains;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class City extends Auditable{
     private String name;
     @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)

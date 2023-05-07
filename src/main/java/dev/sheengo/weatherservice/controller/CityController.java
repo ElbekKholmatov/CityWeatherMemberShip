@@ -3,6 +3,7 @@ package dev.sheengo.weatherservice.controller;
 import dev.sheengo.weatherservice.criteria.CityCreateCriteria;
 import dev.sheengo.weatherservice.criteria.CityShowCriteria;
 import dev.sheengo.weatherservice.domains.City;
+import dev.sheengo.weatherservice.dto.CityIdDTO;
 import dev.sheengo.weatherservice.dto.CityUpdateDto;
 import dev.sheengo.weatherservice.service.CityService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.validation.Valid;
 
@@ -21,26 +23,31 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/city")
 public class CityController {
+
     private final CityService cityService;
 
-    @GetMapping("/all")
+    @GetMapping("/all/{size}/{page}")
     public Page<City> getAllCities(
-//            @RequestBody CityShowCriteria dto,
-            @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "page", defaultValue = "0") int page
+            @PathVariable Integer size,
+            @PathVariable Integer page
     ) {
+        if (page < 0 || size < 0) {
+            throw new IllegalArgumentException("Page and size must be positive");
+        }
         Pageable pageable = PageRequest.of(page, size);
         return cityService.getCitiesPagination(pageable);
     }
-    @GetMapping("/name")
+
+    @GetMapping("/{cityName}")
     public ResponseEntity<City> getCityByName(
-            @RequestBody String cityName
+            @PathVariable String cityName
     ) {
         return ResponseEntity.of(cityService.getCityByName(cityName));
     }
-    @GetMapping("/id")
+
+    @GetMapping("/get/{id}")
     public ResponseEntity<City> getCityById(
-            @RequestBody Long id
+            @PathVariable Long id
     ) {
         return ResponseEntity.of(cityService.getCityById(id));
     }
@@ -53,14 +60,14 @@ public class CityController {
 
     @PutMapping("/update")
     public ResponseEntity<City> updateCity(
-            @RequestBody CityUpdateDto dto
+            CityUpdateDto dto
     ) {
         return ResponseEntity.ok(cityService.update(dto));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(
-            @RequestParam Long id
+             @PathVariable Long id
     ) {
          cityService.delete(id);
          return ResponseEntity.ok().build();

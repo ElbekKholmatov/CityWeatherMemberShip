@@ -15,7 +15,6 @@
     <description>weather-service</description>
     <properties>
         <java.version>11</java.version>
-        <java.version>11</java.version>
     </properties>
 
 

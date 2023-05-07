@@ -2,7 +2,6 @@ package dev.sheengo.weatherservice.dto;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
-import org.springframework.lang.NonNull;
 
 @Data
 public class CityUpdateDto {
