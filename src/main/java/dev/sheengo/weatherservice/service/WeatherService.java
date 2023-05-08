@@ -4,20 +4,27 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.sheengo.weatherservice.domains.City;
 import dev.sheengo.weatherservice.domains.Weather;
+import dev.sheengo.weatherservice.dto.UpdateWeatherDTO;
+import dev.sheengo.weatherservice.exceptions.NotFoundException;
+import dev.sheengo.weatherservice.repository.CityRepository;
 import dev.sheengo.weatherservice.repository.WeatherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class WeatherService {
 
     private final WeatherRepository weatherRepository;
+    private final CityRepository cityRepository;
 
 //    public Weather getWeather(double lat, double lon){
 //        ObjectMapper mapper = new ObjectMapper();
@@ -114,5 +121,27 @@ public class WeatherService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void updateWeatherInGivenCity(String city, UpdateWeatherDTO updateWeatherDTO) {
+        City city1 = cityRepository.findByName(city).orElseThrow(() -> new NotFoundException("City not found"));
+        if (updateWeatherDTO.getAirDensity()!=null)
+            city1.getWeather().setAirDensity(updateWeatherDTO.getAirDensity());
+        if (updateWeatherDTO.getGust()!=null)
+            city1.getWeather().setGust(updateWeatherDTO.getGust());
+        if (updateWeatherDTO.getTemperatureAvg()!=null)
+            city1.getWeather().setTemperatureAvg(updateWeatherDTO.getTemperatureAvg());
+        if (updateWeatherDTO.getTemperatureMax()!=null)
+            city1.getWeather().setTemperatureMax(updateWeatherDTO.getTemperatureMax());
+        if (updateWeatherDTO.getTemperatureMin()!=null)
+            city1.getWeather().setTemperatureMin(updateWeatherDTO.getTemperatureMin());
+        if (updateWeatherDTO.getWindDirection()!=null)
+            city1.getWeather().setWindDirection(updateWeatherDTO.getWindDirection());
+        if (updateWeatherDTO.getWindSpeed()!=null)
+            city1.getWeather().setWindSpeed(updateWeatherDTO.getWindSpeed());
+        city1.getWeather().setDate(LocalDate.now());
+        cityRepository.save(city1);
+
+
     }
 }

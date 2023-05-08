@@ -1,6 +1,7 @@
 package dev.sheengo.weatherservice.controller;
 
 import dev.sheengo.weatherservice.domains.AuthUser;
+import dev.sheengo.weatherservice.dto.AuthUserUpdateDTO;
 import dev.sheengo.weatherservice.dto.auth.AuthUserCreateDTO;
 import dev.sheengo.weatherservice.dto.auth.RefreshTokenRequest;
 import dev.sheengo.weatherservice.dto.auth.TokenRequest;
@@ -9,11 +10,9 @@ import dev.sheengo.weatherservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -40,4 +39,11 @@ public class AuthController {
     public ResponseEntity<AuthUser> register(@NonNull @Valid @RequestBody AuthUserCreateDTO dto) {
         return ResponseEntity.ok(authService.create(dto));
     }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
+    @PutMapping("/update")
+    public ResponseEntity<AuthUser> update(@NonNull @Valid @RequestBody AuthUserUpdateDTO dto) {
+        return ResponseEntity.ok(authService.update(dto));
+    }
+
 }

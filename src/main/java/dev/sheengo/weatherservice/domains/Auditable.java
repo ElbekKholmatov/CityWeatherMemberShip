@@ -1,6 +1,7 @@
 package dev.sheengo.weatherservice.domains;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

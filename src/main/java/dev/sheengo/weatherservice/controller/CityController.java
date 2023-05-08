@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -51,6 +52,8 @@ public class CityController {
     ) {
         return ResponseEntity.of(cityService.getCityById(id));
     }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<City> addCity(
             @Valid @RequestBody CityCreateCriteria dto
@@ -58,6 +61,7 @@ public class CityController {
         return ResponseEntity.ok(cityService.save(dto));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<City> updateCity(
             CityUpdateDto dto
@@ -65,6 +69,7 @@ public class CityController {
         return ResponseEntity.ok(cityService.update(dto));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(
              @PathVariable Long id

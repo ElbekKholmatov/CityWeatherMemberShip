@@ -1,6 +1,7 @@
 package dev.sheengo.weatherservice.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.sheengo.weatherservice.config.GlobalExceptionHandler;
 import dev.sheengo.weatherservice.domains.AuthUser;
 import dev.sheengo.weatherservice.dto.response.AppErrorDTO;
 import dev.sheengo.weatherservice.repository.AuthUserRepository;
@@ -63,15 +64,16 @@ public class SecurityConfig {
                 .anyRequest()
                 .fullyAuthenticated()
                 .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint())
-                .accessDeniedHandler(accessDeniedHandler())
-                .and()
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 
 
@@ -156,6 +158,8 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(authenticationProvider());
     }
+
+
 
 
 }

@@ -2,7 +2,9 @@ package dev.sheengo.weatherservice.service;
 
 
 import dev.sheengo.weatherservice.config.security.JwtTokenUtil;
+import dev.sheengo.weatherservice.config.security.SessionUser;
 import dev.sheengo.weatherservice.domains.AuthUser;
+import dev.sheengo.weatherservice.dto.AuthUserUpdateDTO;
 import dev.sheengo.weatherservice.dto.auth.AuthUserCreateDTO;
 import dev.sheengo.weatherservice.dto.auth.RefreshTokenRequest;
 import dev.sheengo.weatherservice.dto.auth.TokenRequest;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 
+import java.util.Optional;
+
 import static dev.sheengo.weatherservice.enums.TokenType.REFRESH;
 import static dev.sheengo.weatherservice.mapper.AuthUserMapper.AUTH_USER_MAPPER;
 
@@ -29,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
+    private final SessionUser sessionUser;
 
     @Override
     public TokenResponse generateToken(@NonNull TokenRequest tokenRequest) {
@@ -67,5 +72,17 @@ public class AuthServiceImpl implements AuthService {
                 .refreshTokenExpiry(jwtTokenUtil.getExpiry(refreshToken, REFRESH))
                 .build();
         return jwtTokenUtil.generateAccessToken(username, role,tokenResponse);
+    }
+
+    public AuthUser getAuthUser() {
+        return authUserRepository.findById(sessionUser.id())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public AuthUser update(@NonNull AuthUserUpdateDTO dto) {
+        AuthUser authUser = AUTH_USER_MAPPER.updateEntity(dto);
+        authUserRepository.save(authUser);
+        return authUser;
     }
 }

@@ -2,6 +2,7 @@ package dev.sheengo.weatherservice.mapper;
 
 
 import dev.sheengo.weatherservice.domains.AuthUser;
+import dev.sheengo.weatherservice.dto.AuthUserUpdateDTO;
 import dev.sheengo.weatherservice.dto.auth.AuthUserCreateDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -12,4 +13,5 @@ public interface AuthUserMapper {
     AuthUserMapper AUTH_USER_MAPPER= Mappers.getMapper(AuthUserMapper.class);
     AuthUser toEntity(@NonNull AuthUserCreateDTO dto);
 
+    AuthUser updateEntity(AuthUserUpdateDTO dto);
 }

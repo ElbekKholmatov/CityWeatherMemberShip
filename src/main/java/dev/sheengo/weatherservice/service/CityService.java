@@ -1,11 +1,16 @@
 package dev.sheengo.weatherservice.service;
 
+import dev.sheengo.weatherservice.config.security.SessionUser;
 import dev.sheengo.weatherservice.criteria.CityCreateCriteria;
+import dev.sheengo.weatherservice.domains.AuthUser;
 import dev.sheengo.weatherservice.domains.City;
 import dev.sheengo.weatherservice.domains.Location;
 import dev.sheengo.weatherservice.domains.Weather;
 import dev.sheengo.weatherservice.dto.CityCreateDto;
 import dev.sheengo.weatherservice.dto.CityUpdateDto;
+import dev.sheengo.weatherservice.dto.UserWeatherInfoDTO;
+import dev.sheengo.weatherservice.dto.WeatherInfoDTO;
+import dev.sheengo.weatherservice.repository.AuthUserRepository;
 import dev.sheengo.weatherservice.repository.CityRepository;
 import dev.sheengo.weatherservice.repository.WeatherRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +25,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static dev.sheengo.weatherservice.mapper.CityMapper.CITY_MAPPER;
+
 @Service
 @RequiredArgsConstructor
 public class CityService {
     private final CityRepository cityRepository;
     private final LocationService locationService;
     private final WeatherService weatherService;
-    private final WeatherRepository weatherRepository;
+    private final AuthServiceImpl authService;
+    private final AuthUserRepository authUserRepository;
 
     public City save(CityCreateCriteria dto) {
         Location location = locationService.save(Location.childBuilder()
@@ -105,8 +113,26 @@ public class CityService {
         cityRepository.save(city);
     }
 
-    public List<City> findAllByNames(List<String> cities) {
-        System.out.println(cityRepository.findAllByNameIn(cities));
-        return cityRepository.findAllByNameIn(cities);
+
+    public Page<WeatherInfoDTO> getCitiesWeatherBySubscription(Pageable pageable) {
+        AuthUser authUser = authService.getAuthUser();
+        return cityRepository.findCitiesWeatherByUser(authUser, pageable).map(CITY_MAPPER::toWeatherInfoDTO);
     }
+
+    public Optional<City> findByName(String cityName) {
+        return cityRepository.findByName(cityName);
+    }
+
+    public void saveM(City city) {
+        cityRepository.save(city);
+    }
+
+    public Page<UserWeatherInfoDTO> getUserAndTheirSubscriptions(Pageable pageable, AuthUser authUser) {
+        Page<UserWeatherInfoDTO> map = cityRepository.findUserAndTheirSubscriptions(authUser, pageable).map(CITY_MAPPER::toUserWeatherInfoDTO);
+        map.forEach(
+                userWeatherInfoDTO -> userWeatherInfoDTO.setUsername(authUser.getUsername())
+        );
+        return map;
+    }
+
 }
