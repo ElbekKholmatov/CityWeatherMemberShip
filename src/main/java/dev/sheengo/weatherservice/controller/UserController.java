@@ -94,15 +94,4 @@ public class UserController {
         Pageable pageable = PageRequest.of(page, size);
         return userService.getUsersList(pageable);
     }
-
-//    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN')")
-//    @GetMapping("/getAllUsersSubscriptions/{page}/{size}")
-//    public Page<UserWeatherInfoDTO> getAllUsersSubscriptions(
-//            @PathVariable Integer page,
-//            @PathVariable Integer size
-//    ) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        return userService.getAllUsersSubscriptions(pageable);
-//    }
-
 }

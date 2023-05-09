@@ -70,7 +70,4 @@ public class UserService {
         return authUserRepository.findAll(pageable);
     }
 
-//    public Page<UserWeatherInfoDTO> getAllUsersSubscriptions(Pageable pageable) {
-//        return cityService.getAllUsersSubscriptions(pageable);
-//    }
 }
