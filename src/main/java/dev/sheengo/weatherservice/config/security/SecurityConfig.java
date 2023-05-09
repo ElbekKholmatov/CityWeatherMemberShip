@@ -1,10 +1,11 @@
 package dev.sheengo.weatherservice.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sheengo.weatherservice.config.GlobalExceptionHandler;
 import dev.sheengo.weatherservice.domains.AuthUser;
 import dev.sheengo.weatherservice.dto.response.AppErrorDTO;
 import dev.sheengo.weatherservice.repository.AuthUserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,51 +32,60 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.servlet.ServletOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     private final ObjectMapper objectMapper;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthUserRepository authUserRepository;
+    private UserDetailsService userDetailsService;
 
-
-    public SecurityConfig(ObjectMapper objectMapper,
-                          JwtTokenUtil jwtTokenUtil,
-                          AuthUserRepository authUserRepository) {
-        this.objectMapper = objectMapper;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.authUserRepository = authUserRepository;
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .csrf()
-                .disable()
+                .csrf().disable()
                 .authorizeRequests()
-                .mvcMatchers("/**")
-                .permitAll()
-                .anyRequest()
-                .fullyAuthenticated()
+                .antMatchers("/**").permitAll()
+                .anyRequest().fullyAuthenticated()
                 .and()
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(authenticationEntryPoint())
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint())
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
-                .build();
-
+                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
+
+
+//    @Bean
+//    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return
+//        http
+//                .cors().configurationSource(corsConfigurationSource())
+//                .and()
+//                .csrf()
+//                .disable()
+//                .authorizeRequests()
+//                .antMatchers("/**")
+//                .permitAll()
+//                .anyRequest()
+//                .fullyAuthenticated()
+//                .and()
+//                .exceptionHandling()
+//                .accessDeniedHandler(accessDeniedHandler())
+//                .authenticationEntryPoint(authenticationEntryPoint())
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
 
 
     @Bean

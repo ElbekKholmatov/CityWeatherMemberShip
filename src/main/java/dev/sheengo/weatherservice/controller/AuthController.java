@@ -1,11 +1,10 @@
 package dev.sheengo.weatherservice.controller;
 
 import dev.sheengo.weatherservice.domains.AuthUser;
+import dev.sheengo.weatherservice.dto.ActivateUserDTO;
 import dev.sheengo.weatherservice.dto.AuthUserUpdateDTO;
-import dev.sheengo.weatherservice.dto.auth.AuthUserCreateDTO;
-import dev.sheengo.weatherservice.dto.auth.RefreshTokenRequest;
-import dev.sheengo.weatherservice.dto.auth.TokenRequest;
-import dev.sheengo.weatherservice.dto.auth.TokenResponse;
+import dev.sheengo.weatherservice.dto.ResendActivationDTO;
+import dev.sheengo.weatherservice.dto.auth.*;
 import dev.sheengo.weatherservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,5 +44,27 @@ public class AuthController {
     public ResponseEntity<AuthUser> update(@NonNull @Valid @RequestBody AuthUserUpdateDTO dto) {
         return ResponseEntity.ok(authService.update(dto));
     }
+
+    @PutMapping("/reset/password")
+    public ResponseEntity<AuthUser> resetPassword(@NonNull @Valid @RequestBody ResetPasswordDTO dto) {
+        return ResponseEntity.ok(authService.resetPassword(dto));
+    }
+
+    @PutMapping("/resend/activation")
+    public ResponseEntity<String> resendActivation(@NonNull @Valid @RequestBody ResendActivationDTO dto) {
+        return ResponseEntity.ok(authService.resendActivation(dto));
+    }
+
+    @PostMapping("/activate")
+    public ResponseEntity<String> activate(@NonNull @Valid @RequestBody ActivateUserDTO activationCode) {
+        authService.activate(activationCode);
+        return ResponseEntity.ok("User activated successfully");
+    }
+
+    @GetMapping("/get/activation/code")
+    public ResponseEntity<String> getActivationCode(@NonNull String username) {
+        return ResponseEntity.ok(authService.getActivationCode(username));
+    }
+
 
 }
